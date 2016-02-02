@@ -15,6 +15,9 @@
 #include "geometry_msgs/Point.h"
 #include "sensor_msgs/ChannelFloat32.h"
 
+#include <iostream>
+using namespace std;
+
 #define WIDTH	640
 #define HEIGHT	480
 #define FPS     30
@@ -268,37 +271,52 @@ void addData(const Mat1b &image, const Mat3f &depth)
 	geometry_msgs::Point32 ROSPoint;
 	sensor_msgs::ChannelFloat32 chan;
 
-	ROSCloud.header.frame_id = "?frameid";
+	ROSCloud.header.frame_id = "odom";
 	ROSCloud.header.stamp = ros::Time::now();
 
+	chan.name = "rgb";
+	
+	cl::Vec v;
 
 	for (int y = 0; y < image.rows; y++)
 		for (int x = 0; x < image.cols; x++)
 		{
-			Point p = Point(x, y);
+		Point p = Point(x, y);
 			double c = image.at<uchar>(p) / 255.0;
 			if (c == 0) continue;
-			cl::Vec v(depth.at<Vec3f>(p)[0], depth.at<Vec3f>(p)[1], depth.at<Vec3f>(p)[2]);
-			if (v.z < 10000)
+	
+			//cl::Vec v(depth.at<Vec3f>(p)[0], depth.at<Vec3f>(p)[1], depth.at<Vec3f>(p)[2]);
+			//convert pos to v3, retrieve 3 floats 
+			//v.x = ((const Vec3f*)(depth.data + depth->data->step.p[0] * p.y))[p.x];
+			v.x = depth.at<Vec3f>(p)[0];
+			v.y = depth.at<Vec3f>(p)[1];
+			v.z = depth.at<Vec3f>(p)[2];
+			
+			
+			if (v.z < 1000)//was 10000
 			{
 				v /= 1000.0;
 				//_cloud.push_back(PointXYZRGB(v, c));
 				auto temp=PointXYZRGB(v, c);
 				ROSPoint.x = temp.x;
-				ROSPoint.y = temp.y;
+				ROSPoint.y = temp.y*-1;
 				ROSPoint.z = temp.z;
 				ROSCloud.points.push_back(ROSPoint);
 				
-				chan.name = "rgb";
 				chan.values.push_back(c);
-				ROSCloud.channels.push_back(chan);
 
-				cloud_pub.publish(ROSCloud);
+				
 				
 				
 			}
+
 		}
 
+	cout << "Point sent--" << endl;
+
+	ROSCloud.channels.push_back(chan);
+	cloud_pub.publish(ROSCloud);
+	
 }
 
 Vec3b HSV2RGB(float hue, float sat, float val)
@@ -329,6 +347,8 @@ Vec3b HSV2RGB(float hue, float sat, float val)
 
 int DUOGo(int argc, char* argv[])
 {
+#ifndef BOILERPLATE
+
 	printf("Dense3D Point Cloud Program\n");
 
 	// Build color lookup table for depth display
@@ -349,7 +369,7 @@ int DUOGo(int argc, char* argv[])
 		printf("Could not open Dense3DMT\n");
 		return 1;
 	}
-	if (!SetDense3DLicense(dense3d, "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX")) // <-- Put your Dense3D license
+	if (!SetDense3DLicense(dense3d, "D9TU5-TZUDZ-TE72X-485QO-F9R4W")) // <-- Put your Dense3D license
 	{
 		printf("Invalid or missing Dense3D license. To get your license visit https://duo3d.com/account\n");
 		// Close Dense3D library
@@ -422,11 +442,17 @@ int DUOGo(int argc, char* argv[])
 	double fov[4];
 	GetDUOFOV(duo, ri, fov);
 
-	CloudViewer viewer;
-	viewer.setFov(fov[0], fov[1]);
+	//CloudViewer viewer;
+//	viewer.setFov(fov[0], fov[1]);
 
 	// Run capture loop until <Esc> key is pressed
-	while ((cvWaitKey(1) & 0xff) != 27)
+#endif
+
+	char temp[255];
+
+
+
+	while (1) //((cvWaitKey(1) & 0xff) != 27)
 	{
 		D3DFrame d3DFrame;
 		if (!d3dq.pop(d3DFrame))
@@ -442,11 +468,15 @@ int DUOGo(int argc, char* argv[])
 		LUT(rgbBDisparity, colorLut, rgbBDisparity);
 
 		// Display images
-		imshow("Left Image", d3DFrame.leftImg);
-		imshow("Right Image", d3DFrame.rightImg);
-		imshow("Disparity Image", rgbBDisparity);
+		//imshow("Left Image", d3DFrame.leftImg);
+		//imshow("Right Image", d3DFrame.rightImg);
+		//imshow("Disparity Image", rgbBDisparity);
+
+	//	std::cin >> temp;
+//		cout << "loop\n";
+
 	}
-	viewer.close();
+//	viewer.close();
 	destroyAllWindows();
 
 	Dense3DStop(dense3d);
