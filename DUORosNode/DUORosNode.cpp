@@ -274,7 +274,7 @@ void addData(const Mat1b &image, const Mat3f &depth)
 	ROSCloud.header.frame_id = "odom";
 	ROSCloud.header.stamp = ros::Time::now();
 
-	chan.name = "rgb";
+	chan.name = "intensity";
 	
 	cl::Vec v;
 
@@ -282,7 +282,7 @@ void addData(const Mat1b &image, const Mat3f &depth)
 		for (int x = 0; x < image.cols; x++)
 		{
 		Point p = Point(x, y);
-			double c = image.at<uchar>(p) / 255.0;
+		double c = image.at<uchar>(p) / 255.0; //greyscale intensity is what this is. 
 			if (c == 0) continue;
 	
 			//cl::Vec v(depth.at<Vec3f>(p)[0], depth.at<Vec3f>(p)[1], depth.at<Vec3f>(p)[2]);
@@ -301,10 +301,13 @@ void addData(const Mat1b &image, const Mat3f &depth)
 				ROSPoint.x = temp.x;
 				ROSPoint.y = temp.y*-1;
 				ROSPoint.z = temp.z;
+
+				if (temp.z > 10) continue;
 				ROSCloud.points.push_back(ROSPoint);
 				
+//				c = RGB(110, 100, 100);
 				chan.values.push_back(c);
-
+		//		cout << "color:" << c << endl;
 				
 				
 				
@@ -312,7 +315,7 @@ void addData(const Mat1b &image, const Mat3f &depth)
 
 		}
 
-	cout << "Point sent--" << endl;
+	//cout << "Point sent--" << endl;
 
 	ROSCloud.channels.push_back(chan);
 	cloud_pub.publish(ROSCloud);
