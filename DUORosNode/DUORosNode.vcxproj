@@ -108,8 +108,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;C:\opencv\build\x64\vc14\lib\opencv_world310d.lib;C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Debug\rosjadecpp-d-2015.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\repos\DUORosNode\x64\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Debug\rosjadecpp-d-2015.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,8 +147,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Rel-64-15\rosjadecpp-r-2015.lib;DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;C:\opencv\build\x64\vc14\lib\opencv_world310.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\repos\DUORosNode\x64\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Rel-64-15\rosjadecpp-r-2015.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
