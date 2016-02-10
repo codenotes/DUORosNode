@@ -140,7 +140,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);WIN32;_WINDOWS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\opencv\build\include;$(ROS_JADE_INCLUDE_PATHS);C:\Repos\Jade\roscpp_core\include_generated\;C:\repos\DUORosNode\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\opencv\build\include;$(ROS_JADE_INCLUDE_PATHS);C:\Repos\Jade\roscpp_core\include_generated\;C:\repos\DUORosNode\include;$(PCL);$(PCL)\..\..\3rdParty\Eigen\eigen3\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,7 +148,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Rel-64-15\rosjadecpp-r-2015.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\;$(BOOST_158_64_LIB)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

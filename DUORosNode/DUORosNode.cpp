@@ -14,6 +14,8 @@
 #include "sample.h"
 #include "geometry_msgs/Point.h"
 #include "sensor_msgs/ChannelFloat32.h"
+#include <pcl_ros/point_cloud.h>
+
 
 #include <iostream>
 using namespace std;
@@ -264,6 +266,8 @@ namespace cl2 {
 }
 using namespace cl;
 
+//#define COLOR
+
 void addData(const Mat1b &image, const Mat3f &depth)
 {
 	
@@ -277,13 +281,20 @@ void addData(const Mat1b &image, const Mat3f &depth)
 	chan.name = "intensity";
 	
 	cl::Vec v;
+	double c;
 
 	for (int y = 0; y < image.rows; y++)
 		for (int x = 0; x < image.cols; x++)
 		{
 		Point p = Point(x, y);
-		double c = image.at<uchar>(p) / 255.0; //greyscale intensity is what this is. 
-			if (c == 0) continue;
+#ifdef COLOR
+		Vec3b colvec = image.at<Vec3b>(p);
+#else
+		c = image.at<uchar>(p) / 255.0; //greyscale intensity is what this is. 
+		if (c == 0) continue;
+#endif
+			
+
 	
 			//cl::Vec v(depth.at<Vec3f>(p)[0], depth.at<Vec3f>(p)[1], depth.at<Vec3f>(p)[2]);
 			//convert pos to v3, retrieve 3 floats 
@@ -297,7 +308,16 @@ void addData(const Mat1b &image, const Mat3f &depth)
 			{
 				v /= 1000.0;
 				//_cloud.push_back(PointXYZRGB(v, c));
+#ifndef COLOR //if Greyasccale
 				auto temp=PointXYZRGB(v, c);
+#else
+				uchar r=colvec[0] ;
+				uchar g=colvec[1] ;
+				uchar b=colvec[2] ;
+
+				auto temp = PointXYZRGB(v, r,g,b);
+
+#endif
 				ROSPoint.x = temp.x;
 				ROSPoint.y = temp.y*-1;
 				ROSPoint.z = temp.z;
@@ -465,10 +485,21 @@ int DUOGo(int argc, char* argv[])
 		addData(d3DFrame.leftImg, d3DFrame.depth);
 
 		Mat disp8;
-		d3DFrame.disparity.convertTo(disp8, CV_8UC1, 255.0 / (params.numDisparities * 16));
 		Mat rgbBDisparity;
+
+#ifdef COLOR
+		cout << "1" << endl;
+		d3DFrame.disparity.convertTo(disp8, CV_8UC3);//disp8 created here
+		cout << "2" << endl;
+	//	cvtColor(disp8, rgbBDisparity, COLOR_BGR2XYZ);
+		cout << "3" << endl;
+		LUT(disp8, colorLut, rgbBDisparity);
+#else
+		d3DFrame.disparity.convertTo(disp8, CV_8UC1, 255.0 / (params.numDisparities * 16));
 		cvtColor(disp8, rgbBDisparity, COLOR_GRAY2BGR);
 		LUT(rgbBDisparity, colorLut, rgbBDisparity);
+#endif
+
 
 		// Display images
 		//imshow("Left Image", d3DFrame.leftImg);
