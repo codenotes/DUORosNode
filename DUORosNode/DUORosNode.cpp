@@ -15,9 +15,38 @@
 #include "geometry_msgs/Point.h"
 #include "sensor_msgs/ChannelFloat32.h"
 #include <pcl_ros/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_types.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>	
+#include <pcl/filters/voxel_grid.h>
 
+//#pragma comment(lib,"pcl_common_release.lib")
+//#pragma comment(lib,"pcl_features_release.lib")
+//#pragma comment(lib,"pcl_io_ply_release.lib")
+//#pragma comment(lib,"pcl_io_release.lib")
+//#pragma comment(lib,"pcl_kdtree_release.lib")
+//#pragma comment(lib,"pcl_keypoints_release.lib")
+//#pragma comment(lib,"pcl_octree_release.lib")
+//#pragma comment(lib,"pcl_outofcore_release.lib")
+//#pragma comment(lib,"pcl_people_release.lib")
+//#pragma comment(lib,"pcl_recognition_release.lib")
+//#pragma comment(lib,"pcl_registration_release.lib")
+//#pragma comment(lib,"pcl_sample_consensus_release.lib")
+//#pragma comment(lib,"pcl_search_release.lib")
+//#pragma comment(lib,"pcl_segmentation_release.lib")
+//#pragma comment(lib,"pcl_surface_release.lib")
+//#pragma comment(lib,"pcl_tracking_release.lib")
+//#pragma comment(lib,"pcl_visualization_release.lib")
 
+//#include <pcl_ros/transforms.h>
+
+#include <sensor_msgs/pointcloud2.h>
+#include <sensor_msgs/point_cloud_conversion.h>
 #include <iostream>
+
+
+
 using namespace std;
 
 #define WIDTH	640
@@ -25,6 +54,9 @@ using namespace std;
 #define FPS     30
 
 ros::Publisher cloud_pub;
+ros::Publisher cloud_pub2;
+
+#define CLOUD2
 
 namespace cl2 {
 
@@ -338,9 +370,117 @@ void addData(const Mat1b &image, const Mat3f &depth)
 	//cout << "Point sent--" << endl;
 
 	ROSCloud.channels.push_back(chan);
+	
+#ifndef CLOUD2
 	cloud_pub.publish(ROSCloud);
+#else
+
+	
+
+	sensor_msgs::PointCloud2 rosPointCloud2;
+	boost::shared_ptr<pcl::PCLPointCloud2> pcl_pc2( new pcl::PCLPointCloud2 );	boost::shared_ptr<pcl::PCLPointCloud2> filtered(new pcl::PCLPointCloud2);	sensor_msgs::convertPointCloudToPointCloud2(ROSCloud, rosPointCloud2);	pcl_conversions::toPCL(rosPointCloud2, *pcl_pc2); //correct
+		pcl::VoxelGrid<pcl::PCLPointCloud2> filter;//	//	//	pcl::PCLPointCloud2Ptr pc2ptr(new pcl::PCLPointCloud2);//////	sensor_msgs::convertPointCloudToPointCloud2(ROSCloud, pcl_pc2);
+//
+//	
+	
+//	pcl::PointCloud2::Ptr cloud
+//	boost::shared_ptr<sensor_msgs::PointCloud2> ddd;
+	//pcl::PCLPointCloud2Ptr xxx(new pcl::PCLPointCloud2Ptr());
+
+//	pcl::VoxelGrid<sensor_msgs::PointCloud2> downsample;
+	pcl::VoxelGrid<pcl::PCLPointCloud2> downsample;
+
+	downsample.setInputCloud(pcl_pc2);
+
+	//bigger leaves are, the bigger the octcube and courser the points.
+#define DIMS 0.009f
+	downsample.setLeafSize(DIMS, DIMS, DIMS);
+	
+	downsample.filter(*filtered);
+
+	//ROS_INFO_ONCE_NAMED("interop", "size:%d\n", filtered->data.size());
+
+	//printf("size:%d\n", filtered->data.size());
+	
+	cloud_pub2.publish(filtered);
+
+//
+//	
+//	
+//	cloud_pub2.publish(pcl_pc2);
+//	return;
+////	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+//
+//	
+//	pcl::PointCloud< pcl::PointXYZ> * cloud= new pcl::PointCloud< pcl::PointXYZ>();
+//
+//	pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(cloud);//	filter.setInputCloud(cloudPtr);////	// We set the size of every voxel to be 1x1x1cm//	// (only one point per every cubic centimeter will survive).//	//filter.setLeafSize(0.01f, 0.01f, 0.01f);//	filter.setLeafSize(0.95f, 0.95f, 0.95f);//////	printf("size:%d", cloudPtr->size());////	filter.filter(*cloudPtr);//	cloud_pub2.publish(*cloudPtr);
+
+
+#endif
+
+
+
 	
 }
+
+#if 0
+void createAndAddPoint2()
+{
+	int channel_size = 4; //x y z plus color
+	sensor_msgs::PointCloud2 output;
+		
+	output.header.stamp = ros::Time::now();
+	output.header.frame_id = "odom";
+		
+	//TODO: do this at the end once we know how many points
+	//output.width = input.points.size();
+		
+	output.height = 1;
+	output.fields.resize(4);//was (3+channel.size, but we will hardcode a 4th color channel as a float
+	// Convert x/y/z to fields
+	output.fields[0].name = "x"; output.fields[1].name = "y"; output.fields[2].name = "z";
+	int offset = 0;
+	// All offsets are *4, as all field data types are float32
+	for (size_t d = 0; d < output.fields.size(); ++d, offset += 4)
+	{
+		output.fields[d].offset = offset;
+		output.fields[d].datatype = sensor_msgs::PointField::FLOAT32;
+		output.fields[d].count = 1;
+	}
+	output.point_step = offset;
+	output.row_step = output.point_step * output.width;
+	// Convert the remaining of the channels to fields
+	
+	//for (size_t d = 0; d < input.channels.size(); ++d)
+	//for (size_t d = 0; d < channel_size; ++d)
+		//output.fields[3 + d].name = input.channels[d].name;
+	output.fields[3].name = "intensity";
+
+	
+	output.data.resize(input.points.size() * output.point_step);
+	output.is_bigendian = false;  // @todo ?
+	output.is_dense = false;
+
+	// Copy the data points
+	for (size_t cp = 0; cp < input.points.size(); ++cp)
+	{
+		memcpy(&output.data[cp * output.point_step + output.fields[0].offset], &input.points[cp].x, sizeof(float));
+		memcpy(&output.data[cp * output.point_step + output.fields[1].offset], &input.points[cp].y, sizeof(float));
+		memcpy(&output.data[cp * output.point_step + output.fields[2].offset], &input.points[cp].z, sizeof(float));
+		for (size_t d = 0; d < input.channels.size(); ++d)
+		{
+			if (input.channels[d].values.size() == input.points.size())
+			{
+				memcpy(&output.data[cp * output.point_step + output.fields[3 + d].offset], &input.channels[d].values[cp], sizeof(float));
+			}
+		}
+	}
+
+
+}
+#endif
 
 Vec3b HSV2RGB(float hue, float sat, float val)
 {
@@ -519,12 +659,19 @@ int DUOGo(int argc, char* argv[])
 }
 
 
+
 int main(int argc, char ** argv)
 {
 	ros::init(argc, argv, "DUOPointCloud");
 	ros::NodeHandle n;
 
+	
+
 	cloud_pub = n.advertise<sensor_msgs::PointCloud>("pointcloud", 100);
+	cloud_pub2 = n.advertise<sensor_msgs::PointCloud2>("pointcloud2", 100);
+
+//	sensor_msgs::convertPointCloudToPointCloud2(*msg, output));
+
 
 	//ros::Rate loop_rate(10);
 	//int count = 0;

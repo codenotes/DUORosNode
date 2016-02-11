@@ -103,13 +103,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GREG1;ROS_BUILD_SHARED_LIBS;WIN32;_WINDOWS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\opencv\build\include;$(ROS_JADE_INCLUDE_PATHS);C:\Repos\Jade\roscpp_core\include_generated\;C:\repos\DUORosNode\include;$(PCL);$(PCL)\..\..\3rdParty\Eigen\eigen3\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\opencv\build\include;$(ROS_JADE_INCLUDE_PATHS);C:\Repos\Jade\roscpp_core\include_generated\;C:\repos\DUORosNode\include;$(PCL_ROOT)\3rdParty\Eigen\eigen3\;$(PCL_ROOT)\include\pcl-1.7</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Debug\rosjadecpp-d-2015.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\;$(PCL_LIB_64);$(BOOST_158_64_LIB)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pcl_common_debug.lib;pcl_filters_debug.lib;DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Debug\rosjadecpp-d-2015.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\;$(PCL_ROOT)\lib;$(BOOST_158_64_LIB)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,15 +140,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);WIN32;_WINDOWS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\opencv\build\include;$(ROS_JADE_INCLUDE_PATHS);C:\Repos\Jade\roscpp_core\include_generated\;C:\repos\DUORosNode\include;$(PCL);$(PCL)\..\..\3rdParty\Eigen\eigen3\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\opencv\build\include;$(ROS_JADE_INCLUDE_PATHS);C:\Repos\Jade\roscpp_core\include_generated\;C:\repos\DUORosNode\include;$(PCL_ROOT)\3rdParty\Eigen\eigen3\;$(PCL_ROOT)\include\pcl-1.7</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Rel-64-15\rosjadecpp-r-2015.lib;$(PCL_LIB_64)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\;$(BOOST_158_64_LIB)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pcl_common_release.lib;pcl_filters_release.lib;DUOLib.lib;Dense3DMT.lib;%(AdditionalDependencies);freeglut.lib;$(OPENCV_LIBRARIES);C:\Repos\Jade\ros_comm\clients\roscpp\rosjadecpp\x64\Rel-64-15\rosjadecpp-r-2015.lib;$(PCL_LIB_64)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>c:\lib;C:\repos\DUOSDK\windows\x64;C:\Repos\DUORosNode\x64\libs\;$(PCL_ROOT)\lib;$(BOOST_158_64_LIB)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
